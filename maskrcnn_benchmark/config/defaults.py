@@ -367,13 +367,14 @@ _C.SOLVER.STEPS = (30000,)
 _C.SOLVER.WARMUP_FACTOR = 1.0 / 3
 _C.SOLVER.WARMUP_ITERS = 500
 _C.SOLVER.WARMUP_METHOD = "linear"
-
-_C.SOLVER.CHECKPOINT_PERIOD = 2500
+# tag:  change 2500 to 20000
+_C.SOLVER.CHECKPOINT_PERIOD = 20000
 
 # Number of images per batch
 # This is global, so if we have 8 GPUs and IMS_PER_BATCH = 16, each GPU will
 # see 2 images per batch
-_C.SOLVER.IMS_PER_BATCH = 16
+# tag: change 16 to 2
+_C.SOLVER.IMS_PER_BATCH = 2
 
 # ---------------------------------------------------------------------------- #
 # Specific test options
@@ -384,7 +385,8 @@ _C.TEST.EXPECTED_RESULTS_SIGMA_TOL = 4
 # Number of images per batch
 # This is global, so if we have 8 GPUs and IMS_PER_BATCH = 16, each GPU will
 # see 2 images per batch
-_C.TEST.IMS_PER_BATCH = 8
+# tag: change 8 to 1
+_C.TEST.IMS_PER_BATCH = 1
 # Number of detections per image
 _C.TEST.DETECTIONS_PER_IMG = 100
 
@@ -392,6 +394,12 @@ _C.TEST.DETECTIONS_PER_IMG = 100
 # ---------------------------------------------------------------------------- #
 # Misc options
 # ---------------------------------------------------------------------------- #
-_C.OUTPUT_DIR = "."
+# _C.OUTPUT_DIR = "."
+# tag: yang changed
+_C.OUTPUT_DIR = "./output"
+# tag: yang added
+_C.WEIGHT_DIR =''
+_C.LOG_DIR = ''
+_C.CONFIG_DIR = ''
 
 _C.PATHS_CATALOG = os.path.join(os.path.dirname(__file__), "paths_catalog.py")
