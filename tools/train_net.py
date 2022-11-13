@@ -24,6 +24,7 @@ from maskrcnn_benchmark.utils.comm import synchronize, get_rank
 from maskrcnn_benchmark.utils.imports import import_file
 from maskrcnn_benchmark.utils.logger import setup_logger
 from maskrcnn_benchmark.utils.miscellaneous import mkdir
+import datetime
 
 
 def train(cfg, local_rank, distributed):
@@ -44,11 +45,12 @@ def train(cfg, local_rank, distributed):
     arguments = {}
     arguments["iteration"] = 0
 
-    output_dir = cfg.OUTPUT_DIR
-
+    weight_dir = cfg.WEIGHT_DIR
+    if not os.path.exists(weight_dir):
+        os.mkdir(weight_dir)
     save_to_disk = get_rank() == 0
     checkpointer = DetectronCheckpointer(
-        cfg, model, optimizer, scheduler, output_dir, save_to_disk
+        cfg, model, optimizer, scheduler, weight_dir, save_to_disk
     )
     extra_checkpoint_data = checkpointer.load(cfg.MODEL.WEIGHT)
     arguments.update(extra_checkpoint_data)
@@ -120,7 +122,8 @@ def test(cfg, model, distributed):
     if cfg.OUTPUT_DIR:
         for idx, dataset_name in enumerate(dataset_names):
             output_folder = os.path.join(cfg.OUTPUT_DIR, "inference", dataset_name)
-            mkdir(output_folder)
+            if not os.path.exists(output_folder):
+                mkdir(output_folder)
             output_folders[idx] = output_folder
     data_loaders_val = make_data_loader(cfg, is_train=False, is_distributed=distributed)
     for output_folder, dataset_name, data_loader_val in zip(output_folders, dataset_names, data_loaders_val):
@@ -175,15 +178,21 @@ def main():
         )
         synchronize()
 
+    # tag: yang added
+    time_marker = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+    cfg.WEIGHT_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}' + '_Weights_'+ cfg.MODEL.BACKBONE.CONV_BODY)
+    cfg.LOG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}' + '_Log_'+ cfg.MODEL.BACKBONE.CONV_BODY)
+    cfg.CONFIG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}' + '_Config_'+ cfg.MODEL.BACKBONE.CONV_BODY)
+
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
     cfg.freeze()
+    
+    log_dir = cfg.LOG_DIR
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
 
-    output_dir = cfg.OUTPUT_DIR
-    if output_dir:
-        mkdir(output_dir)
-
-    logger = setup_logger("maskrcnn_benchmark", output_dir, get_rank())
+    logger = setup_logger("maskrcnn_benchmark", log_dir, get_rank())
     logger.info("Using {} GPUs".format(num_gpus))
     logger.info(args)
 
