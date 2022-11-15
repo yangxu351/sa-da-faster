@@ -137,8 +137,8 @@ def do_da_train(
     for iteration, ((source_images, source_targets, idx1), (target_images, target_targets, idx2)) in enumerate(zip(source_data_loader, target_data_loader), start_iter):
         data_time = time.time() - end
         arguments["iteration"] = iteration
-
-        scheduler.step()
+        # tag:yang comments
+        # scheduler.step()
         images = (source_images+target_images).to(device)
         targets = [target.to(device) for target in list(source_targets+target_targets)]
 
@@ -154,7 +154,9 @@ def do_da_train(
         optimizer.zero_grad()
         losses.backward()
         optimizer.step()
-
+        # tag: yang adds
+        scheduler.step()
+        
         batch_time = time.time() - end
         end = time.time()
         meters.update(time=batch_time, data=data_time)
