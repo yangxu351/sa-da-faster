@@ -21,11 +21,13 @@ class SyntheticWDT(torch.utils.data.Dataset):
         "WindTurbine",
     )
 
-    def __init__(self, data_dir, split, use_difficult=False, transforms=None):
+    def __init__(self, data_dir, split, use_difficult=False, transforms=None, is_source=True):
         self.root = data_dir
         self.image_set = split
         self.keep_difficult = use_difficult
         self.transforms = transforms
+        # tag:yang adds
+        self.is_source = is_source
 
         self._annopath = os.path.join(self.root, "Annotations", "%s.xml")
         self._imgpath = os.path.join(self.root, "JPEGImages", "%s.jpg")
@@ -66,6 +68,11 @@ class SyntheticWDT(torch.utils.data.Dataset):
         target = BoxList(anno["boxes"], (width, height), mode="xyxy")
         target.add_field("labels", anno["labels"])
         target.add_field("difficult", anno["difficult"])
+        # tag: yang added
+        classes = anno["labels"]
+        domain_labels = torch.ones_like(classes, dtype=torch.uint8) if self.is_source else torch.zeros_like(classes, dtype=torch.uint8)
+        domain_labels = domain_labels.bool()
+        target.add_field("is_source", domain_labels)
         return target
 
     def _preprocess_annotation(self, target):
@@ -131,6 +138,7 @@ if __name__ == '__main__':
     data_loader["source"] = make_data_loader(
         cfg,
         is_train=True,
+        is_source=True,
         is_distributed=False,
         start_iter=0,
     )
