@@ -44,7 +44,7 @@ def train(cfg, local_rank, distributed):
 
     arguments = {}
     arguments["iteration"] = 0
-
+    # tag: yang added
     weight_dir = cfg.WEIGHT_DIR
     if not os.path.exists(weight_dir):
         os.mkdir(weight_dir)
@@ -57,7 +57,6 @@ def train(cfg, local_rank, distributed):
     # arguments["iteration"] = 0
 
     checkpoint_period = cfg.SOLVER.CHECKPOINT_PERIOD
-
     if cfg.MODEL.DOMAIN_ADAPTATION_ON:
         source_data_loader = make_data_loader(
             cfg,
@@ -119,12 +118,15 @@ def test(cfg, model, distributed):
         iou_types = iou_types + ("keypoints",)
     output_folders = [None] * len(cfg.DATASETS.TEST)
     dataset_names = cfg.DATASETS.TEST
-    if cfg.OUTPUT_DIR:
-        for idx, dataset_name in enumerate(dataset_names):
-            output_folder = os.path.join(cfg.OUTPUT_DIR, "inference", dataset_name)
-            if not os.path.exists(output_folder):
-                mkdir(output_folder)
-            output_folders[idx] = output_folder
+    # tag: yang changed
+    if not os.path.exists(cfg.CONFIG_DIR):
+        os.mkdir(cfg.CONFIG_DIR)
+    # if cfg.OUTPUT_DIR:
+    for idx, dataset_name in enumerate(dataset_names):
+        output_folder = os.path.join(cfg.CONFIG_DIR, "inference", dataset_name)
+        if not os.path.exists(output_folder):
+            mkdir(output_folder)
+        output_folders[idx] = output_folder
     data_loaders_val = make_data_loader(cfg, is_train=False, is_distributed=distributed)
     for output_folder, dataset_name, data_loader_val in zip(output_folders, dataset_names, data_loaders_val):
         inference(
@@ -147,7 +149,7 @@ def main():
     parser = argparse.ArgumentParser(description="PyTorch Object Detection Training")
     parser.add_argument(
         "--config-file",
-        default="",
+        default="/data/users/yang/code/sa_da_faster/configs/da_faster_rcnn/e2e_da_faster_rcnn_R_50_FPN_WDT_voc.yaml",
         metavar="FILE",
         help="path to config file",
         type=str,
@@ -178,14 +180,21 @@ def main():
         )
         synchronize()
 
-    # tag: yang added
-    time_marker = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-    cfg.WEIGHT_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}' + '_Weights_'+ cfg.MODEL.BACKBONE.CONV_BODY)
-    cfg.LOG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}' + '_Log_'+ cfg.MODEL.BACKBONE.CONV_BODY)
-    cfg.CONFIG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}' + '_Config_'+ cfg.MODEL.BACKBONE.CONV_BODY)
-
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
+
+    # tag: yang added
+    time_marker = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+    if cfg.DATASETS.DATA_SEED:
+        cfg.WEIGHT_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}_sd{cfg.DATASETS.DATA_SEED}' + '_Weights')
+        cfg.LOG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}_sd{cfg.DATASETS.DATA_SEED}' + '_Log')
+        cfg.CONFIG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}_sd{cfg.DATASETS.DATA_SEED}' + '_Config')
+    else:
+        cfg.WEIGHT_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}' + '_Weights')
+        cfg.LOG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}' + '_Log')
+        cfg.CONFIG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}' + '_Config')
+    
+    
     cfg.freeze()
     
     log_dir = cfg.LOG_DIR
