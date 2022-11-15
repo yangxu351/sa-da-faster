@@ -22,9 +22,16 @@ def main():
     parser = argparse.ArgumentParser(description="PyTorch Object Detection Inference")
     parser.add_argument(
         "--config-file",
-        default="/private/home/fmassa/github/detectron.pytorch_v2/configs/e2e_faster_rcnn_R_50_C4_1x_caffe2.yaml",
+        default="configs/da_faster_rcnn/e2e_da_faster_rcnn_R_50_FPN_WDT_voc_v2.yaml",
         metavar="FILE",
         help="path to config file",
+    )
+    #tag: yang changed
+    parser.add_argument(
+        "--ckpt",
+        help="The path to the checkpoint for test, default is the final checkpoint.",
+        default="/data/users/yang/code/sa_da_faster/output/20221114_0640_R-50-C4_Weights/model_final.pth",
+        metavar="FILE",
     )
     parser.add_argument("--local_rank", type=int, default=0)
     parser.add_argument(
@@ -49,9 +56,17 @@ def main():
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
     cfg.freeze()
-
-    save_dir = ""
-    logger = setup_logger("maskrcnn_benchmark", save_dir, get_rank())
+    print('ckpt--------', args.ckpt)
+    # tag: yang added
+    if args.ckpt is not None:
+        config_dir = os.path.dirname(args.ckpt).replace('Weights', 'Config')
+        log_dir = os.path.dirname(args.ckpt).replace('Weights', 'Log')
+        weight_dir = os.path.dirname(args.ckpt)
+    else:
+        config_dir = os.path.join(cfg.OUTPUT_DIR, "Config")
+        log_dir = os.path.join(cfg.OUTPUT_DIR, "Log")
+    print('----weight dir--------', weight_dir)
+    logger = setup_logger("maskrcnn_benchmark", log_dir, get_rank(), 'log_pred.txt')
     logger.info("Using {} GPUs".format(num_gpus))
     logger.info(cfg)
 
@@ -61,8 +76,7 @@ def main():
     model = build_detection_model(cfg)
     model.to(cfg.MODEL.DEVICE)
 
-    output_dir = cfg.OUTPUT_DIR
-    checkpointer = DetectronCheckpointer(cfg, model, save_dir=output_dir)
+    checkpointer = DetectronCheckpointer(cfg, model, save_dir=weight_dir)
     _ = checkpointer.load(cfg.MODEL.WEIGHT)
 
     iou_types = ("bbox",)
@@ -72,11 +86,12 @@ def main():
         iou_types = iou_types + ("keypoints",)
     output_folders = [None] * len(cfg.DATASETS.TEST)
     dataset_names = cfg.DATASETS.TEST
-    if cfg.OUTPUT_DIR:
-        for idx, dataset_name in enumerate(dataset_names):
-            output_folder = os.path.join(cfg.OUTPUT_DIR, "inference", dataset_name)
-            mkdir(output_folder)
-            output_folders[idx] = output_folder
+
+    #tag:yang changed
+    for idx, dataset_name in enumerate(dataset_names):
+        output_folder = os.path.join(config_dir, 'inference', dataset_name)
+        mkdir(output_folder)
+        output_folders[idx] = output_folder
     data_loaders_val = make_data_loader(cfg, is_train=False, is_distributed=distributed)
     for output_folder, dataset_name, data_loader_val in zip(output_folders, dataset_names, data_loaders_val):
         inference(
