@@ -66,6 +66,8 @@ _C.DATASETS.SOURCE_TRAIN = ()
 _C.DATASETS.TARGET_TRAIN = ()
 # List of the dataset names for testing, as present in paths_catalog.py
 _C.DATASETS.TEST = ()
+# tag: yang adds
+_C.DATASETS.DATA_SEED = 0
 
 # -----------------------------------------------------------------------------
 # DataLoader
