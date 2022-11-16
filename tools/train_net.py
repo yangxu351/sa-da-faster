@@ -149,7 +149,7 @@ def main():
     parser = argparse.ArgumentParser(description="PyTorch Object Detection Training")
     parser.add_argument(
         "--config-file",
-        default="/data/users/yang/code/sa_da_faster/configs/da_faster_rcnn/e2e_da_faster_rcnn_R_50_FPN_WDT_voc.yaml",
+        default="configs/da_faster_rcnn/e2e_da_faster_rcnn_R_50_FPN_WDT_voc_sd0.yaml",
         metavar="FILE",
         help="path to config file",
         type=str,
@@ -185,7 +185,7 @@ def main():
 
     # tag: yang added
     time_marker = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-    if cfg.DATASETS.DATA_SEED:
+    if cfg.DATASETS.DATA_SEED >=0:
         cfg.WEIGHT_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}_sd{cfg.DATASETS.DATA_SEED}' + '_Weights')
         cfg.LOG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}_sd{cfg.DATASETS.DATA_SEED}' + '_Log')
         cfg.CONFIG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}_sd{cfg.DATASETS.DATA_SEED}' + '_Config')
