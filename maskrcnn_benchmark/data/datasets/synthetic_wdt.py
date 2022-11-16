@@ -10,6 +10,8 @@ if sys.version_info[0] == 2:
 else:
     import xml.etree.ElementTree as ET
 
+#tag: yang adds
+import numpy as np
 
 from maskrcnn_benchmark.structures.bounding_box import BoxList
 #tag: yang adds
@@ -37,12 +39,19 @@ class SyntheticWDT(torch.utils.data.Dataset):
         self._annopath = os.path.join(self.root, "Annotations", "%s.xml")
         self._imgpath = os.path.join(self.root, "JPEGImages", "%s.jpg")
         self._imgsetpath = os.path.join(self.root, "ImageSets", "Main", "%s.txt")
+        
+        #tag: yang adds
+        self._maskpath = os.path.join(self.root, "MaskImages", "%s.jpg")
 
         with open(self._imgsetpath % self.image_set) as f:
             self.ids = f.readlines()
-        self.ids = [x.strip("\n") for x in self.ids]
+        # self.ids = [x.strip("\n") for x in self.ids]
         #tag: yang changed
-        # self.ids = [x.split("\t")[0] for x in self.ids]
+        if self.data_seed == -1:
+            self.ids = [x.split("\t")[0] for x in self.ids]
+        else:
+            self.ids = [x.strip("\n") for x in self.ids]
+
         self.id_to_img_map = {k: v for k, v in enumerate(self.ids)}
 
         cls = SyntheticWDT.CLASSES
@@ -56,13 +65,30 @@ class SyntheticWDT(torch.utils.data.Dataset):
         target = self.get_groundtruth(index)
         target = target.clip_to_image(remove_empty=True)
 
+        # tag: yang adds
+        mask_file = self._maskpath % img_id
+        mask = self.get_mask_from_file(mask_file)
         if self.transforms is not None:
-            img, target = self.transforms(img, target)
+            img, target, mask = self.transforms[0](img, target, mask)
+            img = self.transforms[1](img)
+        return img, target, mask, index
 
-        return img, target, index
+        #tag: yang comments
+        # if self.transforms is not None:
+        #     img, target = self.transforms(img, target)
+        # return img, target, index
 
     def __len__(self):
         return len(self.ids)
+
+    # tag: yang adds
+    def get_mask_from_file(mask_file):
+        mask =  np.array(Image.open(mask_file), dtype=np.float32)
+        # mask = (255-mask)/255. #becasus default mask is white BG
+        mask = 255-mask
+        return mask
+        
+
 
     def get_groundtruth(self, index):
         img_id = self.ids[index]
