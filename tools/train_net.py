@@ -185,14 +185,16 @@ def main():
 
     # tag: yang added
     time_marker = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-    if cfg.DATASETS.DATA_SEED:
-        cfg.WEIGHT_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}_sd{cfg.DATASETS.DATA_SEED}' + '_Weights')
-        cfg.LOG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}_sd{cfg.DATASETS.DATA_SEED}' + '_Log')
-        cfg.CONFIG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}_sd{cfg.DATASETS.DATA_SEED}' + '_Config')
+    num_levels = len(cfg.MODEL.RPN.LAYER_LEVELS)
+
+    if cfg.DATASETS.DATA_SEED >= 0:
+        cfg.WEIGHT_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}_mask{cfg.MODEL.RPN.SOFT_VAL}_levels{num_levels}_sd{cfg.DATASETS.DATA_SEED}' + '_Weights')
+        cfg.LOG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}_mask{cfg.MODEL.RPN.SOFT_VAL}_levels{num_levels}_sd{cfg.DATASETS.DATA_SEED}' + '_Log')
+        cfg.CONFIG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}_mask{cfg.MODEL.RPN.SOFT_VAL}_levels{num_levels}_sd{cfg.DATASETS.DATA_SEED}' + '_Config')
     else:
-        cfg.WEIGHT_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}' + '_Weights')
-        cfg.LOG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}' + '_Log')
-        cfg.CONFIG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}' + '_Config')
+        cfg.WEIGHT_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}_mask{cfg.MODEL.RPN.SOFT_VAL}_levels{num_levels}' + '_Weights')
+        cfg.LOG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}_mask{cfg.MODEL.RPN.SOFT_VAL}_levels{num_levels}' + '_Log')
+        cfg.CONFIG_DIR = os.path.join(cfg.OUTPUT_DIR,  f'{time_marker}_{cfg.MODEL.BACKBONE.CONV_BODY}_mask{cfg.MODEL.RPN.SOFT_VAL}_levels{num_levels}' + '_Config')
     
     
     cfg.freeze()
