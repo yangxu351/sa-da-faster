@@ -67,7 +67,7 @@ _C.DATASETS.TARGET_TRAIN = ()
 # List of the dataset names for testing, as present in paths_catalog.py
 _C.DATASETS.TEST = ()
 # tag: yang adds
-_C.DATASETS.DATA_SEED = 0
+_C.DATASETS.DATA_SEED = -1
 
 # -----------------------------------------------------------------------------
 # DataLoader
@@ -167,7 +167,9 @@ _C.MODEL.RPN.FPN_POST_NMS_TOP_N_TRAIN = 2000
 _C.MODEL.RPN.FPN_POST_NMS_TOP_N_TEST = 2000
 # Custom rpn head, empty to use default conv or separable conv
 _C.MODEL.RPN.RPN_HEAD = "SingleConvRPNHead"
-
+# tag:yang adds
+_C.MODEL.RPN.SOFT_VAL = -1
+_C.MODEL.RPN.LAYER_LEVELS = ['0', '1']
 
 # ---------------------------------------------------------------------------- #
 # ROI HEADS options
