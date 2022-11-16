@@ -31,7 +31,7 @@ class GeneralizedRCNN(nn.Module):
         self.roi_heads = build_roi_heads(cfg)
         self.da_heads = build_da_heads(cfg)
 
-    def forward(self, images, targets=None):
+    def forward(self, images, targets=None, masks=None):
         """
         Arguments:
             images (list[Tensor] or ImageList): images to be processed
@@ -52,7 +52,13 @@ class GeneralizedRCNN(nn.Module):
         # res_feat = self.backbone.body(images.tensors)
         # features = self.backbone.fpn(res_feat)
 
-        proposals, proposal_losses = self.rpn(images, features, targets)
+        # proposals, proposal_losses = self.rpn(images, features, targets)
+        #tag: yang changed
+        if self.training and masks is not None:
+            proposals, proposal_losses = self.rpn(images, features, targets, masks)
+        else: # masks is None or testing
+            proposals, proposal_losses = self.rpn(images, features, targets)
+
         da_losses = {}
         if self.roi_heads:
             x, result, detector_losses, da_ins_feas, da_ins_labels, da_proposals = self.roi_heads(features, proposals, targets)
