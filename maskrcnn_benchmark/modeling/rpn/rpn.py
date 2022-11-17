@@ -78,13 +78,13 @@ class RPNMaskHead(nn.Module):
             torch.nn.init.normal_(l.weight, std=0.01)
             torch.nn.init.constant_(l.bias, 0)
 
-    def forward(self, x, masks=None):
+    def forward(self, x, masks):
         logits = []
         bbox_reg = []
-        features = {}
-        for k, feature in x.items():
-            # t = F.relu(self.conv(feature))
-            if masks is not None and k in self.layer_levels:
+        features = []
+        masks = torch.unsqueeze(masks, dim=0)
+        for k, feature in enumerate(x):
+            if k in self.layer_levels:
                 feat_shape = feature.shape[-2:]
                 msk = F.interpolate(masks, size=feat_shape, mode="nearest")
                 if self.soft_val == -1:
@@ -107,17 +107,15 @@ class RPNMaskHead(nn.Module):
                 rl_feat = F.relu(self.conv(feature))
                 t = rl_feat*msk
                 # fixme: 1
-                # features[k] = t
+                # features.append(t)
             else:
                 t = F.relu(self.conv(feature))
             #fixme:2
-            features[k] = t
+            features.append(t)
             logits.append(self.cls_logits(t))
             bbox_reg.append(self.bbox_pred(t))
-        if masks is not None:
-            return logits, bbox_reg, features
-        else:
-            return logits, bbox_reg
+        return logits, bbox_reg, features
+
         # tag: yang comments
         # for feature in x:
         #     t = F.relu(self.conv(feature))
@@ -175,7 +173,11 @@ class RPNModule(torch.nn.Module):
         """
         # objectness, rpn_box_regression = self.head(features)
         #tag: yang changed
-        if self.training and masks is not None and 'Mask' in self.cfg.MODEL.RPN.RPN_HEAD:
+        '''if masks all one, then the masks should be the real dataset'''
+        # one_tensors = torch.ones(masks.shape)
+        # masks_allone = torch.equal(masks.cpu(), one_tensors)
+        # if self.training and not masks_allone and 'Mask' in self.cfg.MODEL.RPN.RPN_HEAD:
+        if self.training and 'Mask' in self.cfg.MODEL.RPN.RPN_HEAD:
             objectness, rpn_box_regression, features = self.head(features, masks)
         else:
             objectness, rpn_box_regression = self.head(features)
