@@ -16,7 +16,7 @@ MODEL:
     FPN_POST_NMS_TOP_N_TEST: 1000
     RPN_HEAD: "SingleConvRPNMaskHead"
     SOFT_VAL: -1.0
-    LAYER_LEVELS: ['0', '1']
+    LAYER_LEVELS: [0, 1]
   ROI_HEADS:
     USE_FPN: True
     BATCH_SIZE_PER_IMAGE: 256
