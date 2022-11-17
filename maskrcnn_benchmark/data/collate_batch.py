@@ -16,5 +16,8 @@ class BatchCollator(object):
         transposed_batch = list(zip(*batch))
         images = to_image_list(transposed_batch[0], self.size_divisible)
         targets = transposed_batch[1]
-        img_ids = transposed_batch[2]
-        return images, targets, img_ids
+        # tag: yang adds
+        masks = transposed_batch[2][0]
+        img_ids = transposed_batch[3]
+        # tag: yang changed
+        return images, targets, masks, img_ids
