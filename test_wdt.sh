@@ -4,5 +4,10 @@
 # 70000 iterations dataseed2
 # CUDA_LAUNCH_BLOCKING=1 CUDA_VISIBLE_DEVICES=3 python tools/test_net.py --config-file configs/da_faster_rcnn/e2e_da_faster_rcnn_R_50_FPN_WDT_voc_sd2.yaml --ckpt /data/users/yang/code/sa_da_faster/output/20221115_1220_R-50-FPN_sd2_Weights/modle_final.pth # 0.3541
 
+''' RPN Mask '''
+## 70000 iterations dataseed-1
+# CUDA_LAUNCH_BLOCKING=1 CUDA_VISIBLE_DEVICES=2 python tools/test_net.py --config-file configs/da_faster_rcnn/e2e_da_faster_rcnn_R_50_FPN_RPNMask_WDT_voc_sd-1.yaml --ckpt ./output/20221116_2244_R-50-FPN_RPNmask-1.0_levels2_sd-1_Weights/model_final.pth # 0.3429
 
-#
+## 70000 iterations dataseed1
+CUDA_LAUNCH_BLOCKING=1 CUDA_VISIBLE_DEVICES=2 python tools/test_net.py --config-file configs/da_faster_rcnn/e2e_da_faster_rcnn_R_50_FPN_RPNMask_WDT_voc_sd1.yaml --ckpt ./output/20221116_2312_R-50-FPN_RPNmask-1.0_levels2_sd1_Weights/model_final.pth # 0.4174
+ 

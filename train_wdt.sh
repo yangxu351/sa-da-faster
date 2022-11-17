@@ -15,7 +15,7 @@
 
 ''' with mask attention '''
 ## dataseed -1
-CUDA_LAUNCH_BLOCKING=1 CUDA_VISIBLE_DEVICES=2 python tools/train_net.py --config-file configs/da_faster_rcnn/e2e_da_faster_rcnn_R_50_FPN_RPNMask_WDT_voc_sd-1.yaml 
+# CUDA_LAUNCH_BLOCKING=1 CUDA_VISIBLE_DEVICES=2 python tools/train_net.py --config-file configs/da_faster_rcnn/e2e_da_faster_rcnn_R_50_FPN_RPNMask_WDT_voc_sd-1.yaml 
 
 ## dataseed 1
 # CUDA_LAUNCH_BLOCKING=1 CUDA_VISIBLE_DEVICES=0 python tools/train_net.py --config-file configs/da_faster_rcnn/e2e_da_faster_rcnn_R_50_FPN_RPNMask_WDT_voc_sd1.yaml 
