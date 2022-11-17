@@ -78,10 +78,18 @@ class RPNMaskHead(nn.Module):
             torch.nn.init.normal_(l.weight, std=0.01)
             torch.nn.init.constant_(l.bias, 0)
 
-    def forward(self, x, masks):
+    def forward(self, x, masks=None):
         logits = []
         bbox_reg = []
         features = []
+        # tag: yang adds for testing
+        if masks is None:
+            for feature in x:
+                t = F.relu(self.conv(feature))
+                logits.append(self.cls_logits(t))
+                bbox_reg.append(self.bbox_pred(t))
+            return logits, bbox_reg
+
         masks = torch.unsqueeze(masks, dim=0)
         for k, feature in enumerate(x):
             if k in self.layer_levels:
