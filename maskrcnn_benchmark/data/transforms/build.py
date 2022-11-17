@@ -1,5 +1,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-from . import transforms as T
+# from . import transforms as T
+# tag:yang changed
+from . import transforms_withMask as T
 
 
 def build_transforms(cfg, is_train=True):
