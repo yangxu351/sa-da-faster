@@ -33,7 +33,7 @@ class SyntheticWDT(torch.utils.data.Dataset):
         self.is_source = is_source
         # tag: yang adds
         self.data_seed = cfg.DATASETS.DATA_SEED
-        if self.data_seed: # !=0
+        if self.data_seed != -1: # !=-1
             self.image_set = split + f"_seed{self.data_seed}"
             
         self._annopath = os.path.join(self.root, "Annotations", "%s.xml")
@@ -67,9 +67,13 @@ class SyntheticWDT(torch.utils.data.Dataset):
 
         # tag: yang adds
         mask_file = self._maskpath % img_id
-        mask = self.get_mask_from_file(mask_file)
+        # tag: yang changed
+        mask = Image.open(mask_file).convert("L")
+        # mask = self.get_mask_from_file(mask_file)
         if self.transforms is not None:
             img, target, mask = self.transforms[0](img, target, mask)
+            # tag: yang adds
+            mask = 1-mask #  #becasus default mask is white BG
             img = self.transforms[1](img)
         return img, target, mask, index
 
@@ -82,7 +86,7 @@ class SyntheticWDT(torch.utils.data.Dataset):
         return len(self.ids)
 
     # tag: yang adds
-    def get_mask_from_file(mask_file):
+    def get_mask_from_file(self, mask_file):
         mask =  np.array(Image.open(mask_file), dtype=np.float32)
         # mask = (255-mask)/255. #becasus default mask is white BG
         mask = 255-mask
