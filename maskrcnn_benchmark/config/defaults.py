@@ -168,8 +168,8 @@ _C.MODEL.RPN.FPN_POST_NMS_TOP_N_TEST = 2000
 # Custom rpn head, empty to use default conv or separable conv
 _C.MODEL.RPN.RPN_HEAD = "SingleConvRPNHead"
 # tag:yang adds
-_C.MODEL.RPN.SOFT_VAL = -1
-_C.MODEL.RPN.LAYER_LEVELS = ['0', '1']
+_C.MODEL.RPN.SOFT_VAL = -1.0
+_C.MODEL.RPN.LAYER_LEVELS = [0, 1]
 
 # ---------------------------------------------------------------------------- #
 # ROI HEADS options
