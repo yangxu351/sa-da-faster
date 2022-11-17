@@ -10,6 +10,8 @@ if sys.version_info[0] == 2:
 else:
     import xml.etree.ElementTree as ET
 
+#tag: yang adds
+import numpy as np
 
 from maskrcnn_benchmark.structures.bounding_box import BoxList
 
@@ -53,12 +55,14 @@ class RealWDT(torch.utils.data.Dataset):
         #     img, target = self.transforms(img, target)
         # return img, target, index
 
+        # tag:yang adds
+        # real mask is all 1
+        mask = Image.fromarray(np.ones(shape=img.size), mode='L')
         # tag: yang changed
         if self.transforms is not None:
-            img, target = self.transforms[0](img, target)
+            img, target, mask = self.transforms[0](img, target, mask)
             img = self.transforms[1](img)
-        # tag:yang adds
-        mask = None
+        
         return img, target, mask, index
 
     def __len__(self):
