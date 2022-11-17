@@ -54,7 +54,7 @@ class GeneralizedRCNN(nn.Module):
 
         # proposals, proposal_losses = self.rpn(images, features, targets)
         #tag: yang changed
-        if self.training and masks is not None:
+        if self.training:
             proposals, proposal_losses = self.rpn(images, features, targets, masks)
         else: # masks is None or testing
             proposals, proposal_losses = self.rpn(images, features, targets)
