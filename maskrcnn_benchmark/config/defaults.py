@@ -35,6 +35,10 @@ _C.MODEL.CLS_AGNOSTIC_BBOX_REG = False
 # path
 _C.MODEL.WEIGHT = ""
 
+# tag:yang adds
+_C.MODEL.SOFT_VAL = -1.0
+_C.MODEL.LAYER_LEVELS = [0, 1]
+
 
 # -----------------------------------------------------------------------------
 # INPUT
@@ -101,7 +105,6 @@ _C.MODEL.BACKBONE.OUT_CHANNELS = 256 * 4
 # GN for backbone
 _C.MODEL.BACKBONE.USE_GN = False
 
-
 # ---------------------------------------------------------------------------- #
 # FPN options
 # ---------------------------------------------------------------------------- #
@@ -167,9 +170,7 @@ _C.MODEL.RPN.FPN_POST_NMS_TOP_N_TRAIN = 2000
 _C.MODEL.RPN.FPN_POST_NMS_TOP_N_TEST = 2000
 # Custom rpn head, empty to use default conv or separable conv
 _C.MODEL.RPN.RPN_HEAD = "SingleConvRPNHead"
-# tag:yang adds
-_C.MODEL.RPN.SOFT_VAL = -1.0
-_C.MODEL.RPN.LAYER_LEVELS = [0, 1]
+
 
 # ---------------------------------------------------------------------------- #
 # ROI HEADS options
