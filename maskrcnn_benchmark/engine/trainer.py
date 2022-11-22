@@ -142,8 +142,10 @@ def do_da_train(
         images = (source_images+target_images).to(device)
         targets = [target.to(device) for target in list(source_targets+target_targets)]
         
-        # tag:yang adds
+        # tag:yang added
         masks = (source_masks+target_masks).to(device)
+        masks = masks.tensors
+        
         # loss_dict = model(images, targets)
         # tag: yang changed
         loss_dict = model(images, targets, masks)
