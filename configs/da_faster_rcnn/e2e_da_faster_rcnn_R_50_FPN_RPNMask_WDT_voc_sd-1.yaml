@@ -3,6 +3,10 @@ MODEL:
   WEIGHT: "catalog://ImageNetPretrained/MSRA/R-50"
   # tag: yang adds
   DEVICE: 'cuda:0'
+  # tag: yang adds
+  SOFT_VAL: -1.0
+  LAYER_LEVELS: [0, 1]
+
   DOMAIN_ADAPTATION_ON: True
   BACKBONE:
     CONV_BODY: "R-50-FPN"
@@ -14,9 +18,9 @@ MODEL:
     PRE_NMS_TOP_N_TEST: 1000
     POST_NMS_TOP_N_TEST: 1000
     FPN_POST_NMS_TOP_N_TEST: 1000
+    # tag: yang adds
     RPN_HEAD: "SingleConvRPNMaskHead"
-    SOFT_VAL: -1.0
-    LAYER_LEVELS: [0, 1]
+
   ROI_HEADS:
     USE_FPN: True
     BATCH_SIZE_PER_IMAGE: 256
