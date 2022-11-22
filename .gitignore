@@ -31,3 +31,6 @@ dist/
 
 # log files
 *.out
+
+# bash training and testing files
+.sh
