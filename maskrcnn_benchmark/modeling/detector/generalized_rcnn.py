@@ -13,6 +13,8 @@ from ..roi_heads.roi_heads import build_roi_heads
 from ..da_heads.da_heads import build_da_heads
 # from ..da_headc.da_heads import build_da_heads
 
+from ..mask_bone.mask_bone import MaskBone
+
 class GeneralizedRCNN(nn.Module):
     """
     Main class for Generalized R-CNN. Currently supports boxes and masks.
@@ -27,9 +29,15 @@ class GeneralizedRCNN(nn.Module):
         super(GeneralizedRCNN, self).__init__()
 
         self.backbone = build_backbone(cfg)
+        # tag: yang adds
+        if cfg.MODEL.FEAT_MASK:
+            self.mask_bone = MaskBone(cfg)
+        else:
+            self.mask_bone = None
         self.rpn = build_rpn(cfg)
         self.roi_heads = build_roi_heads(cfg)
         self.da_heads = build_da_heads(cfg)
+
 
     def forward(self, images, targets=None, masks=None):
         """
@@ -55,6 +63,9 @@ class GeneralizedRCNN(nn.Module):
         # proposals, proposal_losses = self.rpn(images, features, targets)
         #tag: yang changed
         if self.training:
+            #tag: Mask Attention with Features
+            if self.mask_bone is not None:
+                features = self.mask_bone(features, masks)
             proposals, proposal_losses = self.rpn(images, features, targets, masks)
         else: # masks is None or testing
             proposals, proposal_losses = self.rpn(images, features, targets)
