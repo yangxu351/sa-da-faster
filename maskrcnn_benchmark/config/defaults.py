@@ -38,7 +38,8 @@ _C.MODEL.WEIGHT = ""
 # tag:yang adds
 _C.MODEL.SOFT_VAL = -1.0
 _C.MODEL.LAYER_LEVELS = [0, 1]
-
+# tag:yang adds
+_C.MODEL.FEAT_MASK = False
 
 # -----------------------------------------------------------------------------
 # INPUT
