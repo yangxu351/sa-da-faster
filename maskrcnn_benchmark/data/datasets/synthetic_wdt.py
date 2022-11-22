@@ -69,7 +69,6 @@ class SyntheticWDT(torch.utils.data.Dataset):
         mask_file = self._maskpath % img_id
         # tag: yang changed
         mask = Image.open(mask_file).convert("L")
-        # mask = self.get_mask_from_file(mask_file)
         if self.transforms is not None:
             img, target, mask = self.transforms[0](img, target, mask)
             # tag: yang adds
