@@ -100,13 +100,11 @@ class RPNMaskHead(nn.Module):
                 elif self.soft_val == -0.5:
                     soft_msk = torch.rand_like(msk)//2
                     soft_msk[msk==1] = 1
-                    msk=soft_msk
                 else:
                     soft_msk = torch.ones_like(msk)*self.soft_val
                     soft_msk[msk==1] = 1
-                    msk=soft_msk
                 rl_feat = F.relu(self.conv(feature))
-                t = rl_feat*msk
+                t = rl_feat*soft_msk
                 # fixme: 1
                 # features.append(t)
             else:
