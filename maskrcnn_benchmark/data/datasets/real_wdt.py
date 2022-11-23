@@ -56,11 +56,12 @@ class RealWDT(torch.utils.data.Dataset):
         # return img, target, index
 
         # tag:yang adds
-        # real mask is all 1
-        mask = Image.fromarray(np.ones(shape=img.size), mode='L')
+        # real mask is all 255
+        mask = Image.fromarray(np.ones(shape=img.size, dtype=np.uint8)*255).convert('L')
         # tag: yang changed
         if self.transforms is not None:
             img, target, mask = self.transforms[0](img, target, mask)
+            # print('min(mask)----------', torch.min(mask), torch.max(mask))
             img = self.transforms[1](img)
         
         return img, target, mask, index
