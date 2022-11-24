@@ -25,5 +25,6 @@ class MaskBone(nn.Module):
                     soft_msk = torch.ones_like(msk)*self.soft_val
                     soft_msk[msk==1] = 1
                 atten_features.append(feat*soft_msk)
-            
+            else:
+                atten_features.append(feat)
         return atten_features
